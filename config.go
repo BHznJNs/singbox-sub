@@ -102,6 +102,9 @@ dns:
   default-nameserver:
     - 1.1.1.1
     - 8.8.8.8
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
   nameserver:
     - https://1.1.1.1/dns-query
     - https://8.8.8.8/dns-query
