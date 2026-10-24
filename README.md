@@ -36,6 +36,38 @@ Services ready. Subscription URL: http://localhost:8080/<自动生成的令牌>/
 
 此处 `localhost` 是 **VPS 宿主机**，不是你运行 Clash 的电脑。订阅地址用于下载配置；代理流量直接连接 `SERVER_ADDR:SERVER_PORT`，不经过订阅 HTTP 服务。
 
+## GitHub Actions 发布到 GHCR
+
+工作流位于 `.github/workflows/publish-image.yml`，构建并推送 `linux/amd64` 和 `linux/arm64` 多架构镜像，复用当前 Dockerfile 中的测试与静态检查，并启用 GitHub Actions 构建缓存。
+
+| 触发方式 | 发布标签 |
+| --- | --- |
+| 推送到 `main` | `latest`、`sha-<完整提交 SHA>` |
+| 推送 `v*` 标签，例如 `v1.0.0` | `v1.0.0`、`sha-<完整提交 SHA>`，不更新 `latest` |
+| Actions 页面手动运行 | 始终发布 SHA 标签；选择 `main` 时同时发布 `latest`，选择版本标签时同时发布对应标签 |
+
+镜像名称自动取小写仓库名，当前为 `ghcr.io/bhznjns/singbox-sub`。工作流使用 GitHub 自动提供的 `GITHUB_TOKEN`，仅授予 `contents: read` 和 `packages: write`，无需额外配置 PAT 或仓库 Secret。所用 Actions 固定到提交 SHA。
+
+首次使用：
+
+1. 将工作流提交并推送到 GitHub 的 `main`，或在 Actions 页面选择 **Publish image to GHCR → Run workflow**。
+2. 确认仓库允许 GitHub Actions 运行、允许使用这些 Actions，且组织策略没有禁止 `packages: write`。若同名 GHCR 包已存在，在包的 **Package settings → Manage Actions access** 中授予本仓库写入权限。
+3. 发布成功后，在个人或组织的 **Packages → singbox-sub → Package settings → Change visibility** 中按需设为 **Public**，否则匿名用户不能直接拉取。仓库公开不代表新建的 GHCR 包自动公开。
+
+镜像成功发布并设为公开后，可直接运行，无需本地构建：
+
+```bash
+docker run -d \
+  --name singbox-sub \
+  --restart unless-stopped \
+  -p 24443:24443/tcp \
+  -p 127.0.0.1:8080:8080 \
+  -e SERVER_ADDR='你的VPS公网IP或域名' \
+  ghcr.io/bhznjns/singbox-sub:latest
+```
+
+需要固定版本时，将 `latest` 替换为已发布的版本标签或 SHA 标签。此工作流只在推送或手动触发时发布，不对 Pull Request 自动发布镜像；本地添加工作流并不代表镜像已经发布。
+
 ## 环境变量
 
 | 变量 | 默认值 | 说明 |
