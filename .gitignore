@@ -1,0 +1,4 @@
+.tools/
+*.exe
+coverage
+coverage.out
