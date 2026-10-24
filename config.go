@@ -138,6 +138,8 @@ rules:
   - IP-CIDR6,::1/128,DIRECT,no-resolve
   - IP-CIDR6,fc00::/7,DIRECT,no-resolve
   - IP-CIDR6,fe80::/10,DIRECT,no-resolve
+  - GEOSITE,cn,DIRECT
+  - GEOIP,CN,DIRECT
   - MATCH,PROXY
 `, quote(cfg.ServerAddr), cfg.ServerPort, quote(id.UUID), quote(cfg.ServerName), quote(id.PublicKey), quote(id.ShortID)))
 }
