@@ -99,15 +99,32 @@ dns:
   ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+
+
   default-nameserver:
-    - 1.1.1.1
-    - 8.8.8.8
-  direct-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - system
+    - 223.5.5.5
+    - 119.29.29.29
   nameserver:
-    - https://1.1.1.1/dns-query
-    - https://8.8.8.8/dns-query
+    - https://223.5.5.5/dns-query#skip-cert-verify=true
+	- https://doh.pub/dns-query#skip-cert-verify=true
+	- https://dns.alidns.com/dns-query#skip-cert-verify=true
+	- tls://223.5.5.5#skip-cert-verify=true
+	- tls://dot.pub#skip-cert-verify=true
+	- tls://dns.alidns.com#skip-cert-verify=true
+	- https://223.6.6.6/dns-query#skip-cert-verify=true&h3=true
+	- https://cloudflare-dns.com/dns-query#skip-cert-verify=true']
+  fallback:
+    - https://1.1.1.1/dns-query#PROXY
+    - https://8.8.8.8/dns-query#PROXY
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 0.0.0.0/8
+      - 127.0.0.0/8
+      - 198.18.0.0/15
+      - 224.0.0.0/4
 proxies:
   - name: "VLESS-REALITY"
     type: vless
